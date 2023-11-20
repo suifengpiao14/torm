@@ -34,7 +34,7 @@ func RegisterSQLTpl(sqlTplIdentify string, r *template.Template) {
 func GetSQLTpl(identify string) (sqlTplInstance *SqlTplInstance, err error) {
 	val, ok := sqlTemplateMap.Load(identify)
 	if !ok {
-		err = errors.Errorf("not found db by identify:%s,use RegisterSQLTpl to set", identify)
+		err = errors.Errorf("not found sqlTpl by identify:%s,use RegisterSQLTpl to set", identify)
 		return nil, err
 	}
 	p, ok := val.(*SqlTplInstance)
