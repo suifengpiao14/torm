@@ -16,7 +16,11 @@ func TormPackHandler(sqlTplIdentify string, tplName string) (packHandler stream.
 			return nil, err
 		}
 		sqls, _, _, err := GetSQL(sqlTplIdentify, tplName, &volume)
-		return []byte(sqls), nil
+		if err != nil {
+			return nil, err
+		}
+		out = []byte(sqls)
+		return out, nil
 	}, nil)
 	return packHandler
 }
