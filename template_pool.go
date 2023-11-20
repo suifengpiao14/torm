@@ -23,17 +23,12 @@ func (ins *SqlTplInstance) GetTemplate() (r *template.Template) {
 	return ins.tpl
 }
 
-func RegisterSQLTpl(sqlTplIdentify string, r *template.Template) (err error) {
-	if r == nil {
-		err = errors.Errorf("RegisterSQLTpl arg r required,got nil")
-		return err
-	}
+func RegisterSQLTpl(sqlTplIdentify string, r *template.Template) {
 	instance := SqlTplInstance{
 		sqlTplIdentify: sqlTplIdentify,
 		tpl:            r,
 	}
 	sqlTemplateMap.Store(sqlTplIdentify, &instance)
-	return nil
 }
 
 func GetSQLTpl(identify string) (sqlTplInstance *SqlTplInstance, err error) {
