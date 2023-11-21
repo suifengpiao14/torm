@@ -1,7 +1,6 @@
 package tormstream_test
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -45,6 +44,62 @@ func (t *ServerGetByNameEntity) Identity() string {
 	return "curdservice"
 }
 
+type ServicePaginateEntity struct {
+	Limit                      int //
+	Offset                     int //
+	ServicePaginateWhereEntity     //
+	tormstream.VolumeMap
+}
+
+func (t *ServicePaginateEntity) TplName() string {
+	return "ServicePaginate"
+}
+
+func (t *ServicePaginateEntity) Torm() string {
+	return "{{define \"ServicePaginate\"}}\nselect * from `service`  where 1=1 {{template \"ServicePaginateWhere\" .}}   and `deleted_at` is null {{template \"ServicePaginateOrder\"}}  limit :Offset,:Limit ;\n{{end}}\n\n\n\n"
+}
+
+func (t *ServicePaginateEntity) Identity() string {
+	return "curdservice"
+}
+
+type ServicePaginateWhereEntity struct {
+	Name string //项目标识
+	tormstream.VolumeMap
+}
+
+func (t *ServicePaginateWhereEntity) TplName() string {
+	return "ServicePaginateWhere"
+}
+
+func (t *ServicePaginateWhereEntity) Torm() string {
+	return "{{define \"ServicePaginateWhere\"}}\n{{noEmpty \"and `name` like \\\"%%%s%%\\\"\" .Name }}\n{{end}}\n\n"
+}
+
+func (t *ServicePaginateWhereEntity) Identity() string {
+	return "curdservice"
+}
+
+type ServicePaginateOrderEntity struct {
+	tormstream.VolumeMap
+}
+
+func (t *ServicePaginateOrderEntity) TplName() string {
+	return "ServicePaginateOrder"
+}
+
+func (t *ServicePaginateOrderEntity) TplType() string {
+	return "text"
+}
+
+func (t *ServicePaginateOrderEntity) Torm() string {
+	return "{{define \"ServicePaginateOrder\"}}\n    order by `id` desc \n{{end}}\n"
+}
+
+func (t *ServicePaginateOrderEntity) Identity() string {
+	return "curdservice"
+}
+
 func TestRegisterTorm(t *testing.T) {
 	byId := &ServerGetByIdEntity{
 		Id:     1,
@@ -55,14 +110,30 @@ func TestRegisterTorm(t *testing.T) {
 	byName := new(ServerGetByNameEntity)
 	err = tormstream.RegisterTorm(byName)
 	require.NoError(t, err)
+	err = tormstream.RegisterTorm(new(ServicePaginateEntity))
+	require.NoError(t, err)
+
+	err = tormstream.RegisterTorm(new(ServicePaginateWhereEntity))
+	require.NoError(t, err)
+	err = tormstream.RegisterTorm(new(ServicePaginateOrderEntity))
+	require.NoError(t, err)
+
 	sql, _, _, err := tormstream.GetSQL(byId.Identity(), byId.TplName(), byId)
 	require.NoError(t, err)
 	assert.Equal(t, "select * from `server` where `id`=1 and `id` in (1) and `deleted_at` is null;", sql)
+
 	byName = &ServerGetByNameEntity{
 		Name: "a",
 	}
-
 	sql, _, _, err = tormstream.GetSQL(byName.Identity(), byName.TplName(), byName)
 	require.NoError(t, err)
-	fmt.Println(sql)
+	require.Equal(t, "select * from `server` where `name`='a' and `service_name`='' and `deleted_at` is null;", sql)
+
+	page := &ServicePaginateEntity{
+		Limit: 10,
+	}
+	sql, _, _, err = tormstream.GetSQL(page.Identity(), page.TplName(), page)
+	require.NoError(t, err)
+	require.Equal(t, "select * from `service` where 1=1 and `deleted_at` is null order by `id` desc limit 0,10 ;", sql)
+
 }
