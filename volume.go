@@ -3,15 +3,14 @@ package tormstream
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"reflect"
 	"strconv"
 	"strings"
 	"text/template"
 
 	"github.com/pkg/errors"
+	"github.com/spf13/cast"
 	"github.com/suifengpiao14/funcs"
-	"github.com/suifengpiao14/logchan/v2"
 )
 
 const (
@@ -20,17 +19,8 @@ const (
 	HTTP_HEAD_BODY_DELIM = EOF + EOF
 )
 
-func ExecTPL(t *template.Template, tplName string, volume VolumeInterface) (namedSQL string, resetedVolume VolumeInterface, err error) {
+func execTPL(t *template.Template, tplName string, volume _VolumeInterface) (namedSQL string, resetedVolume _VolumeInterface, err error) {
 	var b bytes.Buffer
-	logInfo := &LogInfoExecTpl{
-		TplName: tplName,
-		Volume:  volume,
-	}
-	defer func() {
-		logInfo.NamedSQL = namedSQL
-		logInfo.Err = err
-		logchan.SendLogInfo(logInfo)
-	}()
 	err = t.ExecuteTemplate(&b, tplName, volume)
 	if err != nil {
 		err = errors.WithStack(err)
@@ -41,34 +31,34 @@ func ExecTPL(t *template.Template, tplName string, volume VolumeInterface) (name
 	return namedSQL, volume, nil
 }
 
-type VolumeInterface interface {
+type _VolumeInterface interface {
 	SetValue(key string, value interface{})
 	GetValue(key string, value interface{}) (ok bool)
 }
 
-type VolumeMap map[string]interface{}
+type _VolumeMap map[string]interface{}
 
-func NewVolumeMap() *VolumeMap {
-	return &VolumeMap{}
+func NewVolumeMap() *_VolumeMap {
+	return &_VolumeMap{}
 }
 
-func (v *VolumeMap) init() {
+func (v *_VolumeMap) init() {
 	if v == nil {
 		err := errors.Errorf("*Templatemap must init")
 		panic(err)
 	}
 	if *v == nil {
-		*v = VolumeMap{} // 解决 data33 情况
+		*v = _VolumeMap{} // 解决 data33 情况
 	}
 }
 
-func (v *VolumeMap) SetValue(key string, value interface{}) {
+func (v *_VolumeMap) SetValue(key string, value interface{}) {
 	v.init()
 	(*v)[key] = value
 
 }
 
-func (v *VolumeMap) GetValue(key string, value interface{}) (ok bool) {
+func (v *_VolumeMap) GetValue(key string, value interface{}) (ok bool) {
 	v.init()
 	tmp, ok := (*v)[key]
 	if !ok {
@@ -76,6 +66,12 @@ func (v *VolumeMap) GetValue(key string, value interface{}) (ok bool) {
 	}
 	ok = convertType(value, tmp)
 	return ok
+}
+
+func (v *_VolumeMap) String() (out string) {
+	b, _ := json.Marshal(v)
+	out = string(b)
+	return out
 }
 
 func convertType(dst interface{}, src interface{}) bool {
@@ -95,7 +91,7 @@ func convertType(dst interface{}, src interface{}) bool {
 		rv.Set(realValue)
 		return true
 	}
-	srcStr := ToString(src)
+	srcStr := cast.ToString(src)
 	switch rvT.Kind() {
 	case reflect.Int:
 		srcInt, err := strconv.Atoi(srcStr)
@@ -136,22 +132,4 @@ func convertType(dst interface{}, src interface{}) bool {
 	}
 	err := errors.Errorf("can not convert %v(%s) to %#v", src, rTmp.Type().String(), rvT.String())
 	panic(err)
-}
-
-func ToString(v interface{}) string {
-	switch v := v.(type) {
-	case string:
-		return v
-	case []byte:
-		return string(v)
-	case error:
-		return v.Error()
-	case fmt.Stringer:
-		return v.String()
-	}
-	b, err := json.Marshal(v)
-	if err == nil {
-		return string(b)
-	}
-	return fmt.Sprintf("%v", v)
 }

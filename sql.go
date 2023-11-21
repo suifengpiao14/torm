@@ -11,41 +11,44 @@ import (
 )
 
 // GetSQL 生成SQL(不关联DB操作)
-func GetSQL(sqlTplIdentify string, tplName string, volume VolumeInterface) (sqls string, namedSQL string, resetedVolume VolumeInterface, err error) {
-	sqlTplInstance, err := GetSQLTpl(sqlTplIdentify)
+func GetSQL(tplIdentify string, tplName string, volume _VolumeInterface) (sqls string, namedSQL string, resetedVolume _VolumeInterface, err error) {
+	logInfo := &LogInfoToSQL{}
+	defer func() {
+		logInfo.TplIdentify = tplIdentify
+		logInfo.TplName = tplName
+		logInfo.InputVolume = volume
+		logInfo.SQL = sqls
+		logInfo.Named = namedSQL
+		logInfo.TPLOutVolume = resetedVolume
+		logInfo.Err = err
+		logchan.SendLogInfo(logInfo)
+	}()
+	sqlTplInstance, err := getSQLTpl(tplIdentify)
 	if err != nil {
 		return "", "", nil, err
 	}
-	namedSQL, resetedVolume, err = ExecTPL(sqlTplInstance.tpl, tplName, volume)
+
+	namedSQL, resetedVolume, err = execTPL(sqlTplInstance.tpl, tplName, volume)
 	if err != nil {
 		return "", "", nil, err
 	}
-	sqls, err = ToSQL(namedSQL, resetedVolume)
+
+	namedData, err := getNamedData(resetedVolume)
+	if err != nil {
+		return "", "", nil, err
+	}
+	logInfo.NamedData = namedData
+	sqls, err = toSQL(namedSQL, namedData)
 	if err != nil {
 		return "", "", nil, err
 	}
 	return sqls, namedSQL, resetedVolume, nil
 }
 
-// ToSQL 将字符串、数据整合为sql
-func ToSQL(namedSql string, data interface{}) (sql string, err error) {
+// toSQL 将字符串、数据整合为sql
+func toSQL(namedSql string, namedData map[string]interface{}) (sql string, err error) {
 	namedSql = funcs.StandardizeSpaces(funcs.TrimSpaces(namedSql)) // 格式化sql语句
-	logInfo := &LogInfoToSQL{
-		Named: namedSql,
-		Data:  data,
-		Err:   err,
-	}
 
-	defer func() {
-		logInfo.SQL = sql
-		logInfo.Err = err
-		logchan.SendLogInfo(logInfo)
-	}()
-	namedData, err := getNamedData(data)
-	if err != nil {
-		return "", err
-	}
-	logInfo.NamedData = namedData
 	statment, arguments, err := sqlx.Named(namedSql, namedData)
 	if err != nil {
 		err = errors.WithStack(err)
@@ -74,11 +77,11 @@ func getNamedData(data interface{}) (out map[string]interface{}, err error) {
 		out = *mapOutRef
 		return
 	}
-	if mapOut, ok := data.(VolumeMap); ok {
+	if mapOut, ok := data.(_VolumeMap); ok {
 		out = mapOut
 		return
 	}
-	if mapOutRef, ok := data.(*VolumeMap); ok {
+	if mapOutRef, ok := data.(*_VolumeMap); ok {
 		out = *mapOutRef
 		return
 	}

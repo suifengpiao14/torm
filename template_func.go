@@ -14,30 +14,30 @@ import (
 	"github.com/suifengpiao14/funcs"
 )
 
-const IN_INDEX = "__inIndex"
+const _IN_INDEX = "__inIndex_"
 
 var TormfuncMapSQL = template.FuncMap{
-	"zeroTime":      ZeroTime,
-	"currentTime":   CurrentTime,
-	"permanentTime": PermanentTime,
+	"zeroTime":      _ZeroTime,
+	"currentTime":   _CurrentTime,
+	"permanentTime": _PermanentTime,
 	"contains":      strings.Contains,
-	"newPreComma":   NewPreComma,
-	"in":            In,
+	"newPreComma":   _NewPreComma,
+	"in":            _In,
 	"toCamel":       funcs.ToCamel,
 	"toLowerCamel":  funcs.ToLowerCamel,
 	"snakeCase":     funcs.SnakeCase,
 	//"joinAll":           JoinAll,
-	"md5lower":        MD5LOWER,
-	"fen2yuan":        Fen2yuan,
-	"timestampSecond": TimestampSecond,
-	"xid":             Xid,
-	"noEmpty":         NoEmpty,
-	"insert":          Insert,
+	"md5lower":        _MD5LOWER,
+	"fen2yuan":        _Fen2yuan,
+	"timestampSecond": _TimestampSecond,
+	"xid":             _Xid,
+	"noEmpty":         _NoEmpty,
+	"insert":          _Insert,
 	//"jsonCompact":       JsonCompact,
 	//"standardizeSpaces": util.StandardizeSpaces,
 }
 
-func ZeroTime(volume VolumeInterface) (string, error) {
+func _ZeroTime(volume _VolumeInterface) (string, error) {
 	named := "ZeroTime"
 	placeholder := ":" + named
 	value := "0000-00-00 00:00:00"
@@ -45,7 +45,7 @@ func ZeroTime(volume VolumeInterface) (string, error) {
 	return placeholder, nil
 }
 
-func CurrentTime(volume VolumeInterface) (string, error) {
+func _CurrentTime(volume _VolumeInterface) (string, error) {
 	named := "CurrentTime"
 	placeholder := ":" + named
 	value := time.Now().Format("2006-01-02 15:04:05")
@@ -53,7 +53,7 @@ func CurrentTime(volume VolumeInterface) (string, error) {
 	return placeholder, nil
 }
 
-func PermanentTime(volume VolumeInterface) (string, error) {
+func _PermanentTime(volume _VolumeInterface) (string, error) {
 	named := "PermanentTime"
 	placeholder := ":" + named
 	value := "3000-12-31 23:59:59"
@@ -61,14 +61,14 @@ func PermanentTime(volume VolumeInterface) (string, error) {
 	return placeholder, nil
 }
 
-func MD5LOWER(s ...string) string {
+func _MD5LOWER(s ...string) string {
 	allStr := strings.Join(s, "")
 	h := md5.New()
 	h.Write([]byte(allStr))
 	return hex.EncodeToString(h.Sum(nil))
 }
 
-func Fen2yuan(fen interface{}) string {
+func _Fen2yuan(fen interface{}) string {
 	var yuan float64
 	intFen, ok := fen.(int)
 	if ok {
@@ -87,11 +87,11 @@ func Fen2yuan(fen interface{}) string {
 }
 
 // 秒计数的时间戳
-func TimestampSecond() int64 {
+func _TimestampSecond() int64 {
 	return time.Now().Unix()
 }
 
-func Xid() string {
+func _Xid() string {
 	guid := xid.New()
 	return guid.String()
 }
@@ -100,7 +100,7 @@ type preComma struct {
 	comma string
 }
 
-func NewPreComma() *preComma {
+func _NewPreComma() *preComma {
 	return &preComma{}
 }
 
@@ -162,7 +162,7 @@ func getGormColumnNameFromTag(tag reflect.StructTag) (colName string) {
 	return ""
 }
 
-func Insert(volume VolumeInterface, data interface{}) (str string, err error) {
+func _Insert(volume _VolumeInterface, data interface{}) (str string, err error) {
 	v := reflect.Indirect(reflect.ValueOf(data))
 	column := make([]string, 0)
 	switch v.Kind() {
@@ -224,9 +224,9 @@ func insertValuePlaceholder(v map[string]interface{}, index int, column []string
 	return
 }
 
-func In(volume VolumeInterface, data interface{}) (str string, err error) {
+func _In(volume _VolumeInterface, data interface{}) (str string, err error) {
 	placeholders := make([]string, 0)
-	inIndexKey := IN_INDEX
+	inIndexKey := _IN_INDEX
 	var inIndex int
 	ok := volume.GetValue(inIndexKey, &inIndex)
 	if !ok {
@@ -272,8 +272,8 @@ const (
 	PER_CNET_CHART = '%'
 )
 
-// NoEmpty variable为空输出空字符；如果format 中没有占位符原样输出format,否则按fmt.Sprintf 打印字符,等价模板中一下if场景： {{if .Variable}} xxx {{.Variable}} {{end}} 和  {{if .Variable}} xxx  {{end}}
-func NoEmpty(format string, variable interface{}) (out string, err error) {
+// _NoEmpty variable为空输出空字符；如果format 中没有占位符原样输出format,否则按fmt.Sprintf 打印字符,等价模板中一下if场景： {{if .Variable}} xxx {{.Variable}} {{end}} 和  {{if .Variable}} xxx  {{end}}
+func _NoEmpty(format string, variable interface{}) (out string, err error) {
 	if variable == nil {
 		return "", nil
 	}
