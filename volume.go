@@ -19,7 +19,7 @@ const (
 	HTTP_HEAD_BODY_DELIM = EOF + EOF
 )
 
-func execTPL(t *template.Template, tplName string, volume _VolumeInterface) (namedSQL string, resetedVolume _VolumeInterface, err error) {
+func execTPL(t *template.Template, tplName string, volume VolumeInterface) (namedSQL string, resetedVolume VolumeInterface, err error) {
 	var b bytes.Buffer
 	err = t.ExecuteTemplate(&b, tplName, volume)
 	if err != nil {
@@ -31,34 +31,34 @@ func execTPL(t *template.Template, tplName string, volume _VolumeInterface) (nam
 	return namedSQL, volume, nil
 }
 
-type _VolumeInterface interface {
+type VolumeInterface interface {
 	SetValue(key string, value interface{})
 	GetValue(key string, value interface{}) (ok bool)
 }
 
-type _VolumeMap map[string]interface{}
+type VolumeMap map[string]interface{}
 
-func NewVolumeMap() *_VolumeMap {
-	return &_VolumeMap{}
+func NewVolumeMap() *VolumeMap {
+	return &VolumeMap{}
 }
 
-func (v *_VolumeMap) init() {
+func (v *VolumeMap) init() {
 	if v == nil {
 		err := errors.Errorf("*Templatemap must init")
 		panic(err)
 	}
 	if *v == nil {
-		*v = _VolumeMap{} // 解决 data33 情况
+		*v = VolumeMap{} // 解决 data33 情况
 	}
 }
 
-func (v *_VolumeMap) SetValue(key string, value interface{}) {
+func (v *VolumeMap) SetValue(key string, value interface{}) {
 	v.init()
 	(*v)[key] = value
 
 }
 
-func (v *_VolumeMap) GetValue(key string, value interface{}) (ok bool) {
+func (v *VolumeMap) GetValue(key string, value interface{}) (ok bool) {
 	v.init()
 	tmp, ok := (*v)[key]
 	if !ok {
@@ -68,7 +68,7 @@ func (v *_VolumeMap) GetValue(key string, value interface{}) (ok bool) {
 	return ok
 }
 
-func (v *_VolumeMap) String() (out string) {
+func (v *VolumeMap) String() (out string) {
 	b, _ := json.Marshal(v)
 	out = string(b)
 	return out

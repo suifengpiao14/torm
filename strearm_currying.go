@@ -7,15 +7,10 @@ import (
 	"github.com/suifengpiao14/stream"
 )
 
-type TormI interface {
-	TplName() string
-	Identity() string
-}
-
 // TormPackHandler 执行模板返回SQL
 func TormPackHandler(torm TormI) (packHandler stream.PackHandler) {
 	packHandler = stream.NewPackHandler(func(ctx context.Context, input []byte) (out []byte, err error) {
-		volume := make(_VolumeMap)
+		volume := make(VolumeMap)
 		err = json.Unmarshal(input, &volume)
 		if err != nil {
 			return nil, err

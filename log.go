@@ -15,12 +15,12 @@ const (
 type LogInfoToSQL struct {
 	TplIdentify string           `json:"tplIdentify"`
 	TplName     string           `json:"tplName"`
-	InputVolume _VolumeInterface `json:"inputVolume"`
+	InputVolume VolumeInterface `json:"inputVolume"`
 
 	SQL          string                 `json:"sql"`
 	Named        string                 `json:"named"`
 	NamedData    map[string]interface{} `json:"namedData"`
-	TPLOutVolume _VolumeInterface       `json:"tplOutVolume"`
+	TPLOutVolume VolumeInterface       `json:"tplOutVolume"`
 	Err          error                  `json:"error"`
 	Level        string                 `json:"level"`
 	logchan.EmptyLogInfo

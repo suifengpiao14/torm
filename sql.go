@@ -11,7 +11,7 @@ import (
 )
 
 // GetSQL 生成SQL(不关联DB操作)
-func GetSQL(tplIdentify string, tplName string, volume _VolumeInterface) (sqls string, namedSQL string, resetedVolume _VolumeInterface, err error) {
+func GetSQL(tplIdentify string, tplName string, volume VolumeInterface) (sqls string, namedSQL string, resetedVolume VolumeInterface, err error) {
 	logInfo := &LogInfoToSQL{}
 	defer func() {
 		logInfo.TplIdentify = tplIdentify
@@ -23,12 +23,12 @@ func GetSQL(tplIdentify string, tplName string, volume _VolumeInterface) (sqls s
 		logInfo.Err = err
 		logchan.SendLogInfo(logInfo)
 	}()
-	sqlTplInstance, err := getSQLTpl(tplIdentify)
+	r, err := getSQLTpl(tplIdentify)
 	if err != nil {
 		return "", "", nil, err
 	}
 
-	namedSQL, resetedVolume, err = execTPL(sqlTplInstance.tpl, tplName, volume)
+	namedSQL, resetedVolume, err = execTPL(r, tplName, volume)
 	if err != nil {
 		return "", "", nil, err
 	}
@@ -77,11 +77,11 @@ func getNamedData(data interface{}) (out map[string]interface{}, err error) {
 		out = *mapOutRef
 		return
 	}
-	if mapOut, ok := data.(_VolumeMap); ok {
+	if mapOut, ok := data.(VolumeMap); ok {
 		out = mapOut
 		return
 	}
-	if mapOutRef, ok := data.(*_VolumeMap); ok {
+	if mapOutRef, ok := data.(*VolumeMap); ok {
 		out = *mapOutRef
 		return
 	}

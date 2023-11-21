@@ -37,7 +37,7 @@ var TormfuncMapSQL = template.FuncMap{
 	//"standardizeSpaces": util.StandardizeSpaces,
 }
 
-func _ZeroTime(volume _VolumeInterface) (string, error) {
+func _ZeroTime(volume VolumeInterface) (string, error) {
 	named := "ZeroTime"
 	placeholder := ":" + named
 	value := "0000-00-00 00:00:00"
@@ -45,7 +45,7 @@ func _ZeroTime(volume _VolumeInterface) (string, error) {
 	return placeholder, nil
 }
 
-func _CurrentTime(volume _VolumeInterface) (string, error) {
+func _CurrentTime(volume VolumeInterface) (string, error) {
 	named := "CurrentTime"
 	placeholder := ":" + named
 	value := time.Now().Format("2006-01-02 15:04:05")
@@ -53,7 +53,7 @@ func _CurrentTime(volume _VolumeInterface) (string, error) {
 	return placeholder, nil
 }
 
-func _PermanentTime(volume _VolumeInterface) (string, error) {
+func _PermanentTime(volume VolumeInterface) (string, error) {
 	named := "PermanentTime"
 	placeholder := ":" + named
 	value := "3000-12-31 23:59:59"
@@ -162,7 +162,7 @@ func getGormColumnNameFromTag(tag reflect.StructTag) (colName string) {
 	return ""
 }
 
-func _Insert(volume _VolumeInterface, data interface{}) (str string, err error) {
+func _Insert(volume VolumeInterface, data interface{}) (str string, err error) {
 	v := reflect.Indirect(reflect.ValueOf(data))
 	column := make([]string, 0)
 	switch v.Kind() {
@@ -224,7 +224,7 @@ func insertValuePlaceholder(v map[string]interface{}, index int, column []string
 	return
 }
 
-func _In(volume _VolumeInterface, data interface{}) (str string, err error) {
+func _In(volume VolumeInterface, data interface{}) (str string, err error) {
 	placeholders := make([]string, 0)
 	inIndexKey := _IN_INDEX
 	var inIndex int
