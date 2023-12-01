@@ -11,6 +11,7 @@ require (
 	github.com/suifengpiao14/funcs v0.0.16
 	github.com/suifengpiao14/logchan/v2 v2.0.22
 	gorm.io/gorm v1.25.5
+	moul.io/http2curl v1.0.0
 )
 
 require (
@@ -22,6 +23,7 @@ require (
 	github.com/leodido/go-urn v1.2.4 // indirect
 	github.com/lib/pq v1.10.7 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
+	github.com/smartystreets/goconvey v1.8.1 // indirect
 	golang.org/x/text v0.14.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
