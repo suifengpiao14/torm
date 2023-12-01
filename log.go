@@ -1,4 +1,4 @@
-package tormstream
+package torm
 
 import "github.com/suifengpiao14/logchan/v2"
 

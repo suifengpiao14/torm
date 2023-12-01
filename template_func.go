@@ -1,4 +1,4 @@
-package tormstream
+package torm
 
 import (
 	"crypto/md5"

@@ -51,8 +51,6 @@ github.com/suifengpiao14/funcs v0.0.16 h1:nuwXdfq3JzGit2QcrTOpN8a0f2hohxJiaiyxur
 github.com/suifengpiao14/funcs v0.0.16/go.mod h1:g95inzlUrS2Vtyvv5SjVFOnOeX7ZBPWwyKuEMMW+g7U=
 github.com/suifengpiao14/logchan/v2 v2.0.22 h1:LhpV9E0ofNRQFEvR9MOF4hSHJes8s/aXn9Z4qdLVPck=
 github.com/suifengpiao14/logchan/v2 v2.0.22/go.mod h1:6o0naTqWDkgYMR4vQetJn1zVGMLD9YZ8TrNzQ9OjAFY=
-github.com/suifengpiao14/stream v0.0.16 h1:NqwTvnZvJ3neu4zqStC/VBumFoyQicCwBP9e7GSe4ck=
-github.com/suifengpiao14/stream v0.0.16/go.mod h1:YC0sWm6M/Al2W/z/R1MgbU9WRMPG0lLNLgWpEbqb0/s=
 golang.org/x/text v0.14.0 h1:ScX5w1eTa3QqT8oi6+ziP7dTV1S2+ALU0bI+0zXKWiQ=
 golang.org/x/text v0.14.0/go.mod h1:18ZOQIKpY8NJVqYksKHtTdi31H5itFRjB5/qKTNYzSU=
 gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405 h1:yhCVgyC4o1eVCa2tZl7eS0r+SDo693bJlVdllGtEeKM=
