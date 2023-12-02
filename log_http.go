@@ -15,7 +15,7 @@ const (
 	LogInfoNameHttp LogName = "HttpLogInfo"
 )
 
-//LogInfoHttp 发送日志，只需填写 Request(GetRequest),Response 和RequestBody,其余字段会在BeforSend自动填充
+// LogInfoHttp 发送日志，只需填写 Request(GetRequest),Response 和RequestBody,其余字段会在BeforSend自动填充
 type LogInfoHttp struct {
 	Name           string         `json:"name"`
 	Request        *http.Request  `json:"-"`
@@ -53,7 +53,7 @@ func (h *LogInfoHttp) BeforeSend() {
 	}
 	if req != nil {
 		bodyReader, err := req.GetBody()
-		if err == nil {
+		if err == nil && bodyReader != nil {
 			body, err := io.ReadAll(bodyReader)
 			if err == nil {
 				h.RequestBody = string(body)
@@ -84,7 +84,7 @@ func (h *LogInfoHttp) BeforeSend() {
 	}
 }
 
-//DefaultPrintHttpLogInfo 默认日志打印函数
+// DefaultPrintHttpLogInfo 默认日志打印函数
 func DefaultPrintHttpLogInfo(logInfo logchan.LogInforInterface, typeName logchan.LogName, err error) {
 	if typeName != LogInfoNameHttp {
 		return
