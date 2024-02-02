@@ -15,8 +15,13 @@ type TormI interface {
 
 var sqlTemplateMap sync.Map
 
+//NewTemplate 方便外部初始化模板函数
+func NewTemplate() (t *template.Template) {
+	return template.New("").Funcs(TormfuncMapSQL)
+}
+
 func RegisterTorm(torm TormI) (err error) {
-	tmp, err := template.New("").Funcs(TormfuncMapSQL).Parse(torm.Torm())
+	tmp, err := NewTemplate().Parse(torm.Torm())
 	if err != nil {
 		return err
 	}
@@ -27,7 +32,7 @@ func RegisterTorm(torm TormI) (err error) {
 		r = val.(*template.Template)
 	}
 	if r == nil {
-		r = template.New("").Funcs(TormfuncMapSQL)
+		r = NewTemplate()
 	}
 	tpls := tmp.Templates()
 	for _, tpl := range tpls {
