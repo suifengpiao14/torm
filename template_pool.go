@@ -9,7 +9,7 @@ import (
 
 type TormI interface {
 	TplName() string
-	Identity() string
+	Namespace() string
 	Torm() string
 }
 
@@ -25,7 +25,7 @@ func RegisterTorm(torm TormI) (err error) {
 	if err != nil {
 		return err
 	}
-	identity := torm.Identity()
+	identity := torm.Namespace()
 	val, ok := sqlTemplateMap.Load(identity)
 	var r *template.Template
 	if ok {
@@ -42,7 +42,7 @@ func RegisterTorm(torm TormI) (err error) {
 		}
 		r.AddParseTree(name, tpl.Tree)
 	}
-	sqlTemplateMap.Store(torm.Identity(), r)
+	sqlTemplateMap.Store(torm.Namespace(), r)
 	return nil
 }
 

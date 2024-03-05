@@ -22,7 +22,7 @@ func (t *ServerGetByIdEntity) Torm() string {
 	return "{{define \"ServerGetById\"}}\nselect * from `server`  where `id`=:Id  and `id` in ({{in . .IDList}}) and `deleted_at` is null;\n{{end}}\n\n\n"
 }
 
-func (t *ServerGetByIdEntity) Identity() string {
+func (t *ServerGetByIdEntity) Namespace() string {
 	return "curdservice"
 }
 
@@ -40,7 +40,7 @@ func (t *ServerGetByNameEntity) Torm() string {
 	return "{{define \"serverGetByName\"}}\nselect * from `server` where `name`=:Name and `service_name`=:ServiceName and `deleted_at` is null;\n{{end}}\n"
 }
 
-func (t *ServerGetByNameEntity) Identity() string {
+func (t *ServerGetByNameEntity) Namespace() string {
 	return "curdservice"
 }
 
@@ -59,7 +59,7 @@ func (t *ServicePaginateEntity) Torm() string {
 	return "{{define \"ServicePaginate\"}}\nselect * from `service`  where 1=1 {{template \"ServicePaginateWhere\" .}}   and `deleted_at` is null {{template \"ServicePaginateOrder\"}}  limit :Offset,:Limit ;\n{{end}}\n\n\n\n"
 }
 
-func (t *ServicePaginateEntity) Identity() string {
+func (t *ServicePaginateEntity) Namespace() string {
 	return "curdservice"
 }
 
@@ -76,7 +76,7 @@ func (t *ServicePaginateWhereEntity) Torm() string {
 	return "{{define \"ServicePaginateWhere\"}}\n{{noEmpty \"and `name` like \\\"%%%s%%\\\"\" .Name }}\n{{end}}\n\n"
 }
 
-func (t *ServicePaginateWhereEntity) Identity() string {
+func (t *ServicePaginateWhereEntity) Namespace() string {
 	return "curdservice"
 }
 
@@ -96,7 +96,7 @@ func (t *ServicePaginateOrderEntity) Torm() string {
 	return "{{define \"ServicePaginateOrder\"}}\n    order by `id` desc \n{{end}}\n"
 }
 
-func (t *ServicePaginateOrderEntity) Identity() string {
+func (t *ServicePaginateOrderEntity) Namespace() string {
 	return "curdservice"
 }
 
@@ -118,21 +118,21 @@ func TestRegisterTorm(t *testing.T) {
 	err = torm.RegisterTorm(new(ServicePaginateOrderEntity))
 	require.NoError(t, err)
 
-	sql, _, _, err := torm.GetSQL(byId.Identity(), byId.TplName(), byId)
+	sql, _, _, err := torm.GetSQL(byId.Namespace(), byId.TplName(), byId)
 	require.NoError(t, err)
 	assert.Equal(t, "select * from `server` where `id`=1 and `id` in (1) and `deleted_at` is null;", sql)
 
 	byName = &ServerGetByNameEntity{
 		Name: "a",
 	}
-	sql, _, _, err = torm.GetSQL(byName.Identity(), byName.TplName(), byName)
+	sql, _, _, err = torm.GetSQL(byName.Namespace(), byName.TplName(), byName)
 	require.NoError(t, err)
 	require.Equal(t, "select * from `server` where `name`='a' and `service_name`='' and `deleted_at` is null;", sql)
 
 	page := &ServicePaginateEntity{
 		Limit: 10,
 	}
-	sql, _, _, err = torm.GetSQL(page.Identity(), page.TplName(), page)
+	sql, _, _, err = torm.GetSQL(page.Namespace(), page.TplName(), page)
 	require.NoError(t, err)
 	require.Equal(t, "select * from `service` where 1=1 and `deleted_at` is null order by `id` desc limit 0,10 ;", sql)
 
