@@ -14,14 +14,13 @@ import (
 
 // Torm 模板和执行器之间存在确定关系，在配置中体现, 同一个Torm 下template 内的define 共用相同资源
 type Torm struct {
-	Name                string                 `json:"name"`
-	Source              Source                 `json:"source"`
-	TplText             string                 `json:"tpl"`
-	InputPathTransfers  pathtransfer.Transfers `json:"inputPathTransfers"`
-	OutputPathTransfers pathtransfer.Transfers `json:"outPathTransfers"`
-	PacketHandlers      packethandler.PacketHandlers
-	Flows               packethandler.Flows `json:"flows"`
-	template            *template.Template
+	Name           string                 `json:"name"`
+	Source         Source                 `json:"source"`
+	TplText        string                 `json:"tpl"`
+	Transfers      pathtransfer.Transfers `json:"transfers"`
+	PacketHandlers packethandler.PacketHandlers
+	Flows          packethandler.Flows `json:"flows"`
+	template       *template.Template
 }
 type Torms []Torm
 
@@ -37,7 +36,8 @@ func (t Torm) NamespaceOutput() (namespaceOutput string) {
 
 // FormatInput 从标准输入中获取数据
 func (t Torm) FormatInput(data []byte) (input string) {
-	gjsonPath := t.InputPathTransfers.Reverse().String()
+	inTransfers, _ := t.Transfers.SplitInOut(t.Name)
+	gjsonPath := inTransfers.Reverse().String()
 	input = gjson.GetBytes(data, gjsonPath).String()
 	input = gjson.Get(input, t.NamespaceInput()).String()
 	return input
@@ -45,7 +45,8 @@ func (t Torm) FormatInput(data []byte) (input string) {
 
 // FormatOutput 格式化输出标准数据
 func (t Torm) FormatOutput(data []byte) (output []byte) {
-	gjsonPath := t.OutputPathTransfers.String()
+	_, outTransfers := t.Transfers.SplitInOut(t.Name)
+	gjsonPath := outTransfers.String()
 	output = []byte(gjson.GetBytes(data, gjsonPath).String())
 	output, err := sjson.SetRawBytes(output, t.NamespaceOutput(), output)
 	if err != nil {
@@ -75,16 +76,14 @@ func ParserTpl(source *Source, tplText string, pathtransferLine pathtransfer.Tra
 		if tplName == "" {
 			continue
 		}
-		inTransfers, outTransfers := transfers.SplitInOut(tplName)
 		torm := &Torm{
-			Name:                tplName,
-			Source:              *source,
-			TplText:             tpl.Root.String(),
-			InputPathTransfers:  inTransfers,
-			OutputPathTransfers: outTransfers,
-			PacketHandlers:      packetHandlers,
-			Flows:               flows,
-			template:            tpl,
+			Name:           tplName,
+			Source:         *source,
+			TplText:        tpl.Root.String(),
+			Transfers:      transfers,
+			PacketHandlers: packetHandlers,
+			Flows:          flows,
+			template:       tpl,
 		}
 		torms.Add(*torm)
 	}
@@ -107,11 +106,10 @@ func (ts Torms) GetByName(name string) (t *Torm, err error) {
 	return nil, err
 }
 
-func (ts *Torms) PathTransfers() (pathTransfers pathtransfer.Transfers) {
+func (ts *Torms) Transfers() (pathTransfers pathtransfer.Transfers) {
 	pathTransfers = make(pathtransfer.Transfers, 0)
 	for _, t := range *ts {
-		pathTransfers.AddReplace(t.InputPathTransfers...)
-		pathTransfers.AddReplace(t.OutputPathTransfers...)
+		pathTransfers.AddReplace(t.Transfers...)
 	}
 
 	return pathTransfers
