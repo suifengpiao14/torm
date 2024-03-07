@@ -11,7 +11,7 @@ require (
 	github.com/suifengpiao14/logchan/v2 v2.0.22
 	github.com/suifengpiao14/packethandler v0.0.2
 	github.com/suifengpiao14/pathtransfer v0.0.4
-	github.com/suifengpiao14/sqlexec v0.0.28
+	github.com/suifengpiao14/sqlexec v0.0.29
 	github.com/tidwall/gjson v1.17.1
 	github.com/tidwall/sjson v1.2.5
 	moul.io/http2curl v1.0.0
