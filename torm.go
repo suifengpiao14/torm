@@ -19,7 +19,7 @@ type Torm struct {
 	TplText        string                 `json:"tpl"`
 	Transfers      pathtransfer.Transfers `json:"transfers"`
 	PacketHandlers packethandler.PacketHandlers
-	Flows          packethandler.Flows `json:"flows"`
+	Flow           packethandler.Flow `json:"flow"`
 	template       *template.Template
 }
 type Torms []Torm
@@ -56,7 +56,7 @@ func (t Torm) FormatOutput(data []byte) (output []byte) {
 }
 
 //解析tpl 文本，生成 Torms
-func ParserTpl(source *Source, tplText string, pathtransferLine pathtransfer.TransferLine, flows packethandler.Flows, packetHandlers packethandler.PacketHandlers) (torms Torms, err error) {
+func ParserTpl(source *Source, tplText string, pathtransferLine pathtransfer.TransferLine, flow packethandler.Flow, packetHandlers packethandler.PacketHandlers) (torms Torms, err error) {
 	t := NewTemplate()
 	t, err = t.Parse(tplText)
 	if err != nil {
@@ -82,7 +82,7 @@ func ParserTpl(source *Source, tplText string, pathtransferLine pathtransfer.Tra
 			TplText:        tpl.Root.String(),
 			Transfers:      transfers,
 			PacketHandlers: packetHandlers,
-			Flows:          flows,
+			Flow:           flow,
 			template:       tpl,
 		}
 		torms.Add(*torm)
