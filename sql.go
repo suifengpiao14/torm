@@ -8,41 +8,6 @@ import (
 	"github.com/suifengpiao14/sqlexec"
 )
 
-// GetSQL 生成SQL(不关联DB操作)
-func GetSQL(tplIdentify string, tplName string, volume VolumeInterface) (sqls string, namedSQL string, resetedVolume VolumeInterface, err error) {
-	logInfo := &LogInfoToSQL{}
-	defer func() {
-		logInfo.TplIdentify = tplIdentify
-		logInfo.TplName = tplName
-		logInfo.InputVolume = volume
-		logInfo.SQL = sqls
-		logInfo.Named = namedSQL
-		logInfo.TPLOutVolume = resetedVolume
-		logInfo.Err = err
-		logchan.SendLogInfo(logInfo)
-	}()
-	r, err := getSQLTpl(tplIdentify)
-	if err != nil {
-		return "", "", nil, err
-	}
-
-	namedSQL, resetedVolume, err = execTPL(r, tplName, volume)
-	if err != nil {
-		return "", "", nil, err
-	}
-
-	namedData, err := getNamedData(resetedVolume)
-	if err != nil {
-		return "", "", nil, err
-	}
-	logInfo.NamedData = namedData
-	sqls, err = sqlexec.ExplainSQL(namedSQL, namedData)
-	if err != nil {
-		return "", "", nil, err
-	}
-	return sqls, namedSQL, resetedVolume, nil
-}
-
 // GetSQLFromTemplate 从模板中获取SQL，供不使用pool情况使用
 func GetSQLFromTemplate(r *template.Template, tplName string, volume VolumeInterface) (sqls string, namedSQL string, resetedVolume VolumeInterface, err error) {
 	logInfo := &LogInfoToSQL{}
