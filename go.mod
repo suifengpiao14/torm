@@ -12,8 +12,6 @@ require (
 	github.com/suifengpiao14/pathtransfer v0.0.4
 	github.com/suifengpiao14/sqlexec v0.0.31
 	github.com/suifengpiao14/sshmysql v0.0.5
-	github.com/tidwall/gjson v1.17.1
-	github.com/tidwall/sjson v1.2.5
 	moul.io/http2curl v1.0.0
 )
 
@@ -42,8 +40,10 @@ require (
 	github.com/smartystreets/goconvey v1.8.1 // indirect
 	github.com/suifengpiao14/ddl-executor v0.0.4 // indirect
 	github.com/suifengpiao14/gjsonmodifier v0.1.10 // indirect
+	github.com/tidwall/gjson v1.17.1 // indirect
 	github.com/tidwall/match v1.1.1 // indirect
 	github.com/tidwall/pretty v1.2.1 // indirect
+	github.com/tidwall/sjson v1.2.5 // indirect
 	github.com/yusufpapurcu/wmi v1.2.4 // indirect
 	go.uber.org/atomic v1.3.2 // indirect
 	go.uber.org/multierr v1.1.0 // indirect
