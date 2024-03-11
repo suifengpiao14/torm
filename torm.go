@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"strings"
 	"text/template"
+	"text/template/parse"
 
 	"github.com/pkg/errors"
 	"github.com/suifengpiao14/packethandler"
@@ -14,13 +15,14 @@ import (
 
 // Torm 模板和执行器之间存在确定关系，在配置中体现, 同一个Torm 下template 内的define 共用相同资源
 type Torm struct {
-	Name           string                 `json:"name"`
-	Source         Source                 `json:"source"`
-	TplText        string                 `json:"tpl"`
-	Transfers      pathtransfer.Transfers `json:"transfers"`
-	PacketHandlers packethandler.PacketHandlers
-	Flow           packethandler.Flow `json:"flow"`
-	template       *template.Template
+	Name             string                 `json:"name"`
+	SubTemplateNames []string               `json:"subTemplateNames"`
+	Source           Source                 `json:"source"`
+	TplText          string                 `json:"tpl"`
+	Transfers        pathtransfer.Transfers `json:"transfers"`
+	PacketHandlers   packethandler.PacketHandlers
+	Flow             packethandler.Flow `json:"flow"`
+	template         *template.Template
 }
 type Torms []Torm
 
@@ -77,13 +79,18 @@ func ParserTpl(source *Source, tplText string, pathtransferLine pathtransfer.Tra
 			continue
 		}
 		torm := &Torm{
-			Name:           tplName,
-			Source:         *source,
-			TplText:        tpl.Root.String(),
-			Transfers:      transfers,
-			PacketHandlers: packetHandlers,
-			Flow:           flow,
-			template:       tpl,
+			Name:             tplName,
+			SubTemplateNames: make([]string, 0),
+			Source:           *source,
+			TplText:          tpl.Root.String(),
+			Transfers:        transfers,
+			PacketHandlers:   packetHandlers,
+			Flow:             flow,
+			template:         tpl,
+		}
+		torm.SubTemplateNames, err = GetSubTemplateNames(tpl, tplName)
+		if err != nil {
+			return nil, err
 		}
 		torms.Add(*torm)
 	}
@@ -120,4 +127,37 @@ func (ts *Torms) Template() (allTpl *template.Template, err error) {
 		allTpl.AddParseTree(t.template.Name(), t.template.Tree)
 	}
 	return allTpl, nil
+}
+
+// GetSubTemplateNames 遍历 TemplateNode 节点
+func GetSubTemplateNames(templ *template.Template, tplName string) (subTemplateNames []string, err error) {
+	if templ == nil {
+		err = errors.Errorf("GetSubTemplateNames:  *template.Template required")
+		return nil, err
+	}
+	subTemplateNames = make([]string, 0)
+	t := templ.Lookup(tplName)
+
+	if t == nil {
+		err = errors.Errorf("template: no template %s associated with template %s", templ.Name(), tplName)
+		return nil, err
+	}
+
+	Traverse(t.Root, func(node parse.Node) {
+		switch n := node.(type) {
+		case *parse.TemplateNode:
+			subTemplateNames = append(subTemplateNames, n.Name)
+			var subNames []string // 此处需要单独声明，方便将 err 带出到外层
+			subNames, err = GetSubTemplateNames(templ.Lookup(n.Name), n.Name)
+			if err != nil {
+				return
+			}
+			subTemplateNames = append(subTemplateNames, subNames...)
+
+		}
+	})
+	if err != nil {
+		return nil, err
+	}
+	return subTemplateNames, nil
 }

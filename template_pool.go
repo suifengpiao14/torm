@@ -15,9 +15,14 @@ type TormI interface {
 
 var sqlTemplateMap sync.Map
 
+const (
+	Torm_DELIM_LEFT  = "{{"
+	Torm_DELIM_RIGHT = "}}"
+)
+
 //NewTemplate 方便外部初始化模板函数
 func NewTemplate() (t *template.Template) {
-	return template.New("").Funcs(TormfuncMapSQL)
+	return template.New("").Delims(Torm_DELIM_LEFT, Torm_DELIM_RIGHT).Funcs(TormfuncMapSQL)
 }
 
 func RegisterTorm(torm TormI) (err error) {
