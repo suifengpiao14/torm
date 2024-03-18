@@ -28,7 +28,7 @@ func (t Torm) GetRootTemplate() (template *template.Template) {
 }
 
 // 解析tpl 文本，生成 Torms
-func ParserTpl(source *Source, tplText string, pathtransferLine pathtransfer.TransferLine, flow packethandler.Flow, packetHandlers packethandler.PacketHandlers) (torms Torms, err error) {
+func ParserTpl(source *Source, tplText string) (torms Torms, err error) {
 	t := NewTemplate()
 	t, err = t.Parse(tplText)
 	if err != nil {
@@ -40,7 +40,6 @@ func ParserTpl(source *Source, tplText string, pathtransferLine pathtransfer.Tra
 		return nil, err
 	}
 
-	transfers := pathtransferLine.Transfer()
 	torms = make(Torms, 0)
 
 	for _, tpl := range t.Templates() {
@@ -53,25 +52,34 @@ func ParserTpl(source *Source, tplText string, pathtransferLine pathtransfer.Tra
 			SubTemplateNames: make([]string, 0),
 			Source:           *source,
 			TplText:          tpl.Root.String(),
-			Transfers:        transfers,
-			PacketHandlers:   packetHandlers,
-			Flow:             flow,
 			template:         t, // 这里使用根模板，方便解决子模板依赖问题
 		}
 		torm.SubTemplateNames, err = GetSubTemplateNames(tpl, tplName)
 		if err != nil {
 			return nil, err
 		}
-		torms.Add(*torm)
+		torms.AddReplace(*torm)
 	}
 	return torms, nil
 }
 
-func (ts *Torms) Add(subTorms ...Torm) {
+func (ts *Torms) AddReplace(subTorms ...Torm) {
 	if *ts == nil {
 		*ts = make(Torms, 0)
 	}
-	*ts = append(*ts, subTorms...)
+	for _, subTorm := range subTorms {
+		exists := false
+		for i, tor := range *ts {
+			if strings.EqualFold(subTorm.Name, tor.Name) {
+				(*ts)[i] = tor
+				exists = true
+			}
+		}
+		if !exists {
+			*ts = append(*ts, subTorm)
+		}
+
+	}
 }
 func (ts Torms) GetByName(name string) (t *Torm, err error) {
 	for _, t := range ts {
