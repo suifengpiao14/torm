@@ -8,6 +8,8 @@ import (
 	"github.com/pkg/errors"
 	"github.com/suifengpiao14/packethandler"
 	"github.com/suifengpiao14/pathtransfer"
+	"github.com/suifengpiao14/stream"
+	"golang.org/x/net/context"
 )
 
 // Torm 模板和执行器之间存在确定关系，在配置中体现, 同一个Torm 下template 内的define 共用相同资源
@@ -25,6 +27,18 @@ type Torms []Torm
 
 func (t Torm) GetRootTemplate() (template *template.Template) {
 	return t.template
+}
+func (t Torm) Run(ctx context.Context, input []byte) (out []byte, err error) {
+	packetHandlers, err := t.PacketHandlers.GetByName(t.Flow...)
+	if err != nil {
+		return nil, err
+	}
+	s := stream.NewStream(t.Name, nil, packetHandlers...)
+	out, err = s.Run(ctx, input)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 // 解析tpl 文本，生成 Torms
