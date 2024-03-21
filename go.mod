@@ -10,7 +10,7 @@ require (
 	github.com/suifengpiao14/funcs v0.0.18
 	github.com/suifengpiao14/logchan/v2 v2.0.22
 	github.com/suifengpiao14/packethandler v0.0.4
-	github.com/suifengpiao14/pathtransfer v0.0.4
+	github.com/suifengpiao14/pathtransfer v0.0.9
 	github.com/suifengpiao14/sqlexec v0.0.31
 	github.com/suifengpiao14/sshmysql v0.0.5
 	github.com/suifengpiao14/stream v0.0.65
@@ -28,28 +28,37 @@ require (
 	github.com/go-playground/universal-translator v0.18.1 // indirect
 	github.com/go-playground/validator v9.31.0+incompatible // indirect
 	github.com/go-sql-driver/mysql v1.7.1 // indirect
+	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang/protobuf v1.5.4 // indirect
+	github.com/google/btree v1.0.0 // indirect
 	github.com/jfcote87/sshdb v0.5.3 // indirect
 	github.com/jmoiron/sqlx v1.3.5 // indirect
 	github.com/juju/errors v1.0.0 // indirect
 	github.com/leodido/go-urn v1.2.4 // indirect
+	github.com/opentracing/opentracing-go v1.1.0 // indirect
 	github.com/pingcap/errors v0.11.4 // indirect
 	github.com/pingcap/log v0.0.0-20190715063458-479153f07ebd // indirect
 	github.com/pingcap/parser v3.1.2+incompatible // indirect
+	github.com/pingcap/pd v2.1.0-rc.4+incompatible // indirect
 	github.com/pingcap/tidb v0.0.0-20191023085059-c9000abdc216 // indirect
 	github.com/pingcap/tipb v0.0.0-20240305085524-87f5b80908ab // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
+	github.com/prometheus/client_golang v1.14.0 // indirect
+	github.com/prometheus/common v0.39.0 // indirect
+	github.com/prometheus/procfs v0.9.0 // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec // indirect
 	github.com/shirou/gopsutil v3.21.11+incompatible // indirect
 	github.com/sirupsen/logrus v1.9.3 // indirect
+	github.com/smarty/assertions v1.15.1 // indirect
 	github.com/smartystreets/goconvey v1.8.1 // indirect
 	github.com/suifengpiao14/ddl-executor v0.0.4 // indirect
-	github.com/suifengpiao14/gjsonmodifier v0.1.10 // indirect
+	github.com/suifengpiao14/gjsonmodifier v0.2.2 // indirect
 	github.com/tidwall/gjson v1.17.1 // indirect
 	github.com/tidwall/match v1.1.1 // indirect
 	github.com/tidwall/pretty v1.2.1 // indirect
 	github.com/tidwall/sjson v1.2.5 // indirect
 	github.com/yusufpapurcu/wmi v1.2.4 // indirect
+	go.uber.org/atomic v1.11.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	go.uber.org/zap v1.27.0 // indirect
 	golang.org/x/crypto v0.21.0 // indirect

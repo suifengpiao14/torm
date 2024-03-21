@@ -85,7 +85,7 @@ func (ts *Torms) AddReplace(subTorms ...Torm) {
 		exists := false
 		for i, tor := range *ts {
 			if strings.EqualFold(subTorm.Name, tor.Name) {
-				(*ts)[i] = tor
+				(*ts)[i] = subTorm
 				exists = true
 			}
 		}
