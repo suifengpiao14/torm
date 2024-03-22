@@ -14,7 +14,8 @@ import (
 
 // Torm 模板和执行器之间存在确定关系，在配置中体现, 同一个Torm 下template 内的define 共用相同资源
 type Torm struct {
-	Name             string                 `json:"name"`
+	Namespace        string                 `json:"namespace"`
+	TplName          string                 `json:"tplName"`
 	SubTemplateNames []string               `json:"subTemplateNames"`
 	Source           Source                 `json:"source"`
 	TplText          string                 `json:"tpl"`
@@ -23,7 +24,17 @@ type Torm struct {
 	Flow             packethandler.Flow `json:"flow"`
 	template         *template.Template
 }
+
 type Torms []Torm
+
+func (t Torm) Name() string {
+	return pathtransfer.JoinPath(t.Namespace, t.TplName).String()
+}
+
+func (t Torm) GetIONamespace() (inNamespace string, outNamespace string) {
+	inNamespace, outNamespace = pathtransfer.JoinPath(t.Namespace, t.TplName, pathtransfer.Transfer_Direction_input).String(), pathtransfer.JoinPath(t.TplName, pathtransfer.Transfer_Direction_output).String()
+	return inNamespace, outNamespace
+}
 
 func (t Torm) GetRootTemplate() (template *template.Template) {
 	return t.template
@@ -33,7 +44,7 @@ func (t Torm) Run(ctx context.Context, input []byte) (out []byte, err error) {
 	if err != nil {
 		return nil, err
 	}
-	s := stream.NewStream(t.Name, nil, packetHandlers...)
+	s := stream.NewStream(t.TplName, nil, packetHandlers...)
 	out, err = s.Run(ctx, input)
 	if err != nil {
 		return nil, err
@@ -62,7 +73,7 @@ func ParserTpl(source *Source, tplText string) (torms Torms, err error) {
 			continue
 		}
 		torm := &Torm{
-			Name:             tplName,
+			TplName:          tplName,
 			SubTemplateNames: make([]string, 0),
 			Source:           *source,
 			TplText:          tpl.Root.String(),
@@ -84,7 +95,7 @@ func (ts *Torms) AddReplace(subTorms ...Torm) {
 	for _, subTorm := range subTorms {
 		exists := false
 		for i, tor := range *ts {
-			if strings.EqualFold(subTorm.Name, tor.Name) {
+			if strings.EqualFold(subTorm.TplName, tor.TplName) {
 				(*ts)[i] = subTorm
 				exists = true
 			}
@@ -95,9 +106,9 @@ func (ts *Torms) AddReplace(subTorms ...Torm) {
 
 	}
 }
-func (ts Torms) GetByName(name string) (t *Torm, err error) {
+func (ts Torms) GetByTplName(name string) (t *Torm, err error) {
 	for _, t := range ts {
-		if strings.EqualFold(name, t.Name) {
+		if strings.EqualFold(name, t.TplName) {
 			return &t, nil
 		}
 	}

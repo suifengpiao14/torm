@@ -10,7 +10,7 @@ require (
 	github.com/suifengpiao14/funcs v0.0.18
 	github.com/suifengpiao14/logchan/v2 v2.0.22
 	github.com/suifengpiao14/packethandler v0.0.4
-	github.com/suifengpiao14/pathtransfer v0.0.9
+	github.com/suifengpiao14/pathtransfer v0.0.10
 	github.com/suifengpiao14/sqlexec v0.0.31
 	github.com/suifengpiao14/sshmysql v0.0.5
 	github.com/suifengpiao14/stream v0.0.65
@@ -23,6 +23,7 @@ require (
 	github.com/cznic/mathutil v0.0.0-20181122101859-297441e03548 // indirect
 	github.com/d5/tengo/v2 v2.16.1 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/evanphx/json-patch/v5 v5.9.0 // indirect
 	github.com/go-ole/go-ole v1.3.0 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
