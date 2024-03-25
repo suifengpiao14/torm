@@ -8,7 +8,6 @@ import (
 	"github.com/pkg/errors"
 	"github.com/suifengpiao14/packethandler"
 	"github.com/suifengpiao14/pathtransfer"
-	"github.com/suifengpiao14/stream"
 	"github.com/tidwall/gjson"
 	"golang.org/x/net/context"
 )
@@ -67,8 +66,7 @@ func (t Torm) Run(ctx context.Context, input []byte) (out []byte, err error) {
 	if err != nil {
 		return nil, err
 	}
-	s := stream.NewStream(t.TplName, nil, packetHandlers...)
-	out, err = s.Run(ctx, input)
+	out, err = packetHandlers.Run(ctx, input)
 	if err != nil {
 		return nil, err
 	}
