@@ -10,10 +10,11 @@ require (
 	github.com/suifengpiao14/funcs v0.0.18
 	github.com/suifengpiao14/logchan/v2 v2.0.22
 	github.com/suifengpiao14/packethandler v0.0.4
-	github.com/suifengpiao14/pathtransfer v0.0.11
+	github.com/suifengpiao14/pathtransfer v0.0.13
 	github.com/suifengpiao14/sqlexec v0.0.31
 	github.com/suifengpiao14/sshmysql v0.0.5
 	github.com/suifengpiao14/stream v0.0.65
+	github.com/tidwall/gjson v1.17.1
 	golang.org/x/net v0.22.0
 	moul.io/http2curl v1.0.0
 )
@@ -54,7 +55,6 @@ require (
 	github.com/smartystreets/goconvey v1.8.1 // indirect
 	github.com/suifengpiao14/ddl-executor v0.0.4 // indirect
 	github.com/suifengpiao14/gjsonmodifier v0.2.2 // indirect
-	github.com/tidwall/gjson v1.17.1 // indirect
 	github.com/tidwall/match v1.1.1 // indirect
 	github.com/tidwall/pretty v1.2.1 // indirect
 	github.com/tidwall/sjson v1.2.5 // indirect

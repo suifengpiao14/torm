@@ -9,6 +9,7 @@ import (
 	"github.com/suifengpiao14/packethandler"
 	"github.com/suifengpiao14/pathtransfer"
 	"github.com/suifengpiao14/stream"
+	"github.com/tidwall/gjson"
 	"golang.org/x/net/context"
 )
 
@@ -34,6 +35,28 @@ func (t Torm) Name() string {
 func (t Torm) GetIONamespace() (inNamespace string, outNamespace string) {
 	inNamespace, outNamespace = pathtransfer.JoinPath(t.Namespace, t.TplName, pathtransfer.Transfer_Direction_input).String(), pathtransfer.JoinPath(t.TplName, pathtransfer.Transfer_Direction_output).String()
 	return inNamespace, outNamespace
+}
+
+//TrimOutNamespace 去除输出的io命名空间
+func (t Torm) TrimOutNamespace(input []byte) (out string, err error) {
+	_, outNamespace := t.GetIONamespace()
+	result := gjson.GetBytes(input, outNamespace)
+	if result.Exists() {
+		out = result.String()
+		return out, nil
+	}
+	_, outTransfer := t.Transfers.SplitInOut()
+	path := outTransfer.ModifySrcPath(func(path pathtransfer.Path) (newPath pathtransfer.Path) {
+		return pathtransfer.Path(path.TrimIONamespace())
+	}).Reverse().GjsonPath()
+	result = gjson.GetBytes(input, path)
+	if !result.Exists() {
+		err = errors.Errorf("io/dictionary key not exists:io key:%s,dictionary key:%s;input:%s", outNamespace, path, string(input))
+		return "", err
+	}
+	out = result.String()
+
+	return out, nil
 }
 
 func (t Torm) GetRootTemplate() (template *template.Template) {
