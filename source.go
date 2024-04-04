@@ -32,7 +32,9 @@ const (
 	SOURCE_TYPE_RABBITMQ   = "RABBITMQ"
 )
 
-//Init 配置Provider,DDL等
+var ERROR_SOURCE_NOT_FOUND = errors.New("not found source")
+
+// Init 配置Provider,DDL等
 func (s *Source) Init() (err error) {
 	switch strings.ToUpper(s.Type) {
 	case SOURCE_TYPE_SQL:
@@ -81,11 +83,11 @@ func (ss Sources) GetByIdentifer(identify string) (s *Source, err error) {
 			return &s, nil
 		}
 	}
-	err = errors.Errorf("not found source by source identifier: %s", identify)
+	err = errors.WithMessagef(ERROR_SOURCE_NOT_FOUND, "source identifer:%s", identify)
 	return nil, err
 }
 
-//MakeSource 创建常规资源,方便外部统一调用
+// MakeSource 创建常规资源,方便外部统一调用
 func MakeSource(identifer string, typ string, config string, sshConfig string, ddl string) (s Source, err error) {
 	s = Source{
 		Identifer: identifer,
